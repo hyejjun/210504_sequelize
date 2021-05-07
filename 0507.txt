@@ -1,0 +1,72 @@
+쿠키 내용 브라우저에 저장됨
+세션 내용 서버에 저장됨
+
+
+쿠키 
+- 장바구니 기능 (비회원일때)
+- 일주일 동안 다시보지 않기
+- 사용자 측에 저장하는거
+- 보안성이 아주 취약함
+
+세션
+- 서버 측에 저장
+- 로그인 (서버측에서 로그인한 상태를 알고 뿌려줌)
+
+
+* 자동로그인 기능
+- 이거는 쿠키와 세션을 같이 활용해야 함
+
+
+* 세션 생성
+- 로그인이 성공했을 때만 세션을 생성해주면 된다.
+
+-----------------------------------------------
+
+node server.js로 서버 오픈하고
+
+server.js 파일로 가서 실행이 된다.
+
+const router = require('./routers/index');      // 2. 여기로 가서 이 위치를 찾는다.
+app.use('/',router);   // 1. 이 부분이 실행이 되면
+
+
+routers/index.js 로 와서
+여기는 url의 대분류를 관리하는 곳이다.
+localhost:3000          -       const mainRouter = require('./main/index');
+localhost:3000/user     -       const userRouter = require('./user/index');
+부분을 관리한다.
+각각 이렇게 연결을 해놓았다.
+
+<main 부분>
+처음에 localhost:3000 부분이 main 폴더라고 할 수 있다.
+main/index.js 로 가면 여기가 중분류하는 곳이다.
+localhost:3000/user/중분류
+const controller = require('./main.controller');
+여기로 연결 되어있다.
+
+실질적인 코드가 들어가는 부분인 main/main.controller.js 부분으로 가보자
+main 함수에 index.html을 렌더해서 보내주었다. 이 main은 exports 되어서 main/index.js로 가게 된다.
+
+
+<user 부분>
+main : localhost:3000 인 상태에서
+두가지 선택이 있다
+회원가입과 로그인
+user폴더에서 처리해준다.
+
+회원가입
+localhost:3000/user/join
+여기서 get된 값이랑 post된 값을 받아온다. url 정리만 해주는 부분이다.
+실질적인 코드들은 user.controller.js 에 적는다. - sql 구문 같은 것들.
+다 적으면 이걸 변수에 담아서 user/index.js로 보내준다.
+
+* 쿼리를 실행하는 부분
+무조건 비동기로
+async
+await
+반환값은 reserve 혹은 reject 로 오게 된다.
+
+
+
+* 로그인 check
+select * from users where userid = ' ' and  userpw = ' ';

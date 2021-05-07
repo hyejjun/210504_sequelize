@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+<body>
+    <h2>사용자 가입정보</h2>
+    <table>
+        <tr>
+            <td>이름</td>
+            <td>ID</td>
+            <td>PW</td>
+            <td>성별</td>
+            <td>가입일자</td>
+        </tr>
+        {% for item in userList %}
+        <tr>
+            <td> {{ item.username }} </td>
+            <td> {{ item.userid }} </td>
+            <td> {{ item.userpw }}</td>
+            <td> {{'남자' if item.gender else '여자' }}</td>
+            <td> {{item.userdt}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+</body>
+</html>
