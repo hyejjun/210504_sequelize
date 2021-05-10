@@ -17,16 +17,21 @@ let logout = (req,res)=>{
         res.redirect('/');
     })
 }
-
+// 이 부분만 API, db에 요청해서 json으로 받아오는
 let info = async (req,res)=>{
     let userList = await User.findAll({
         attributes:['id','userid','userpw','username','gender','userimage',
         [Sequelize.fn('date_format',Sequelize.col('userdt'), '%Y-%m-%d'),'userdt']]
     });
     //console.log(userList);
+    /*
     res.render('./user/info.html',{
         userList : userList
     });
+    */
+    res.json({
+        userList,
+    })
 }
 
 

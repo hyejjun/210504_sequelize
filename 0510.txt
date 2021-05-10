@@ -1,0 +1,12 @@
+user.controller.js에서 작업
+res.json({
+    userList,
+})
+
+
+npm install cors
+
+server.js 에
+const cors = require('cors');
+app.use(cors())
+해주고

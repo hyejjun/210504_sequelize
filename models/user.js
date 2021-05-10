@@ -45,13 +45,3 @@ module.exports = class User extends Sequelize.Model{
         });
     }
 }
-
-/*
-이러한 필드값을 갖고싶음!
-    userid
-    userpw
-    username
-    gender
-    userimage
-    userdt
-*/

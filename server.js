@@ -7,11 +7,19 @@ const router = require('./routers/index');
 const nunjucks = require('nunjucks');
 const bodyParser = require('body-parser');
 const session = require('express-session');     // npm install express-session
+const cors = require('cors');
+
+
+app.use(cors());
+
 
 app.set('view engine', 'html');
 nunjucks.configure('views',{
     express:app,
 })
+
+
+
 // 세션 설정값
 app.use(session({
     secret : 'aaa',
