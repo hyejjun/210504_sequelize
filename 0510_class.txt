@@ -1,0 +1,163 @@
+html 페이지를 다시써야 하므로 속도가 느리다는 단점
+페이지 로드가 없이 데이터를 가져올 수 있는 기능 - AJAX
+
+예 ) 검색어 자동완성 기능...
+
+
+client 한번의 요청 server 한번의 응답
+서버가 완료 될때까지 브라우져가 기다리고 있다.
+
+
+AJAX :
+
+client 브라우져에서 요청은 똑같이 보내고 똑같이 응답을 받는다.
+비동기는 원하는정보만 JSON 형태로 로드를 받는다
+JSON
+XML
+형태로 받는다
+
+장점 : data 통신량 적음 - 속도 향상
+단점 : js로 구현해줘야함
+
+* but AJAX를 너무 남발하면 안된다
+
+
+* 서버와 html 이 필요하다
+
+------------------------------
+
+index.html
+
+<script type="text/javascript">
+        const xhr = new XMLHttpRequest();   // xhr은 객체다.
+        xhr.open('get', 'http://localhost:3001')      
+        //xhr open매서드 사용하면 이게 요청이다. = url 변경한것과 같은효과
+        // 첫번재 인자값엔 get or post 두번재 인자값엔 주소
+        xhr.send();     //실질적으로 보낸다는 뜻
+        // 이 응답을 받는 곳이 필요함
+</script>
+
+
+/*const xhr = new XMLHttpRequest();   // xhr은 객체다.
+
+        xhr.onreadystatechange = function(){
+            if(this.readyState === 4){
+                console.log(this.responseText);
+            }
+        }
+
+        xhr.open('get', 'http://localhost:3001');      
+        xhr.send();     //실질적으로 보낸다는 뜻
+ */
+
+live server 열면 안되는데 이건 주소가 달라서 그럼 - 해결위해서
+
+npm install cors
+해줌
+
+이 설정값을 미들웨어에 탑재
+
+
+app.use(cors());
+다른 도메인도 허락해줄게
+
+화면로딩서버    5000
+데이터 넘겨주는 서버 따로 있는것    3000
+
+
+<3000번 서버 응답하기>
+
+xhr.onreadystatechange = function(){
+    console.log(this.readyState);
+}
+
+서버 열고 콘솔창보면
+1234 가 나오는데 4가 나와야 완료가 되었다는 뜻
+4가 안나오면 요청이 실패했다는거임
+
+xhr.onreadystatechange = function(){
+    if(this.readyState === 4){
+        console.log(this.responseText);
+    }
+}
+콘솔창에서 {"success":true} 이게 나옴
+
+
+**************************************************
+
+
+[참고 주소]
+
+http://jsonplaceholder.typicode.com/comments
+
+http://jsonplaceholder.typicode.com/posts
+
+--------------------------------------------------------
+
+
+*axios library 를 가지고 작업을 할거임
+
+axios cdn 이라고 검색하기
+
+https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js
+
+--> 누군가 만든 API
+Live server는 화면만 뿌려주는 역할
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script type="text/javascript">
+    axios.get('https://localhost:3001')        //Promise 객체로 반환이 되어서 .으로 사용가능
+    .then((res)=>{
+        console.log(res);
+        //console.log(res.data); // 이것도 같은 값이 나오는걸 확인할 수 있음
+    })
+</script>
+
+-------------------------------------------------
+
+http://jsonplaceholder.typicode.com/posts
+
+axios.get('http://jsonplaceholder.typicode.com/posts')        //Promise 객체로 반환이 되어서 .으로 사용가능
+    .then((res)=>{
+    console.log(res.data);
+})
+
+특정값만 보고싶으면 posts?userId=1 이렇게 해주면 된다.
+
+혹은
+for문으로 하나하나 요소를 뽑아올 수 있다
+.then((res)=>{
+    for(let i=0; i<res.data.length; i++){
+        console.log(res.data[i]);
+    }
+})
+
+
+이걸 함수 안에 넣어본다.
+    function getData(){
+        axios.get('http://jsonplaceholder.typicode.com/posts?userId=1')        //Promise 객체로 반환이 되어서 .으로 사용가능
+        .then((res)=>{
+            for(let i=0; i<res.data.length; i++){
+                console.log(res.data[i]);
+            }
+        })
+    }
+
+-----
+div안에 값 넣어보기 - 그림 10
+res.data[i]
+res.data[i].title 만 가져올 수도 있음
+
+버튼을 누를때마다 계속 나옴
+
+버튼 한번 누를때마다 하나씩 추가되게 하고싶으면
+id 값을 하나씩 늘어나게 하면됨
+
+
+----------------------------------------
+
+리액트
+html 페이지를 가공해서 뿌려줌
+그래서 nunjucks는 사실 사용을 별로 안한다.
+
+비동기 통신의 어려움을 해소하기 위해 나타난것이다.
