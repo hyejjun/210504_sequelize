@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');     //class
+const moment = require('moment')
 
 module.exports = class User extends Sequelize.Model{
     static init(sequelize){ //sequelize라는 인자값을 넣어서 init함수를 정의해줌
@@ -28,9 +29,13 @@ module.exports = class User extends Sequelize.Model{
                 allowNull : true,
             },
             userdt :{
-                type : Sequelize.DATE,
+                type : Sequelize.DATEONLY,
                 allowNull : false,
-                defaultValue : Sequelize.NOW
+                defaultValue : Sequelize.NOW,
+                get : function(){
+                    return moment(this.getDataValue('userdt')).format('YYYY-MM-DD')
+                    //npm install moment
+                }
             }
         },{
             //이부분은 User 자식한테 추가한 값

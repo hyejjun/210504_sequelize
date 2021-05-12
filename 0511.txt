@@ -1,0 +1,165 @@
+1. 미들웨어 두개 이상 사용
+2. input 으로 이미지 파일 올리기
+3. 이미지파일 db에 저장 (경로만 저장) - multer사용
+4. 비밀번호 재확인
+5. 아이디 중복체크
+
+-----------------------------------------------
+npm install moment
+npm install multer
+npm install path
+
+* server를 껐다 켤때마다 db가 초기화 된다면
+server.js 파일에서
+sequelize.sync({ force : false, })      
+// server 다시 켤때마다 db초기화 된다면 true를 false값으로 바꿔주기
+여기서 true를 쓰지 않았나 확인해보기
+
+-------------------------------------------------
+
+<app.get(여러개의 콜백함수 넣어보기)>
+사진 5번
+두개의 미들웨어(콜백함수)가 들어갈 수 있다, next를 써줘야한다 안쓰면 첫번째것만 동작함
+
+사진 6번
+여러개의 미들웨어 next를 이용함 끝없이 진행될 수 있음
+
+
+---------------------------------------------------------
+<이미지 인풋으로 받기>
+
+1. 코드
+const multer = require('multer');
+const path = require('path');       //npm install path
+
+// 이 부분은 외우기 or 가져다 쓰기
+const upload = multer({
+    storage:multer.diskStorage({
+        destination:function(req,file,callback){
+            callback(null,'uploads/')   //폴더명
+        },
+        filename:function(req,file,callback){
+            callback(null, new Date().valueOf() + path.extname(file.originalname));
+        }
+    }),
+})
+
+
+2. 설명
+<td><input type="file" name="img"></td>
+이렇게 했기 때문에
+
+router.post('/join_success',upload.single('img'),controller.join_success);
+이렇게 img로 넣어주면된다
+
+@@ 왜 join_success 에 넣었나??
+join 에 넣지 않고?
+-> join은 /join 이라는 uri에 도착했을때 html을 열어줄뿐 데이터를 처리하는건 아니기 때문
+-> 데이터를 넘길 준비를 하는 부분이 join
+-> submit 버튼을 눌렀을때 form에 있는 data를 가지고 join_success 로 가게 된다.
+
+join_success
+db 처리하고
+완료되면 다른 페이지로 redirect 한다.
+
+이제 db에 img 저장하는걸 배워보자
+
+
+3. 폴더 생성
+uploads 폴더 생성
+
+
+* 이미지 처리 방법
+엄청나게 긴 텍스트로 이미지가 오는데 이걸 multer 로 가공해준다.
+
+
+* 이미지를 dB에도 저장하나? 그림 10
+이미지는 dB에 긴 텍스트로 저장하지 않음
+파일 서버라는 걸 만들어서 파일을 저장하는 공간을 하나 만든다.
+하지만 우리는 서버 한대여도 돌아가기때매 서버에 저장한 것
+dB에는 파일 경로만 저장하면 된다. (파일 서버가 있다고 해도 파일 경로만 저장하는것이다.)
+
+
+<이미지 db에 저장하기>
+user.controller.js
+
+let join_success = async (req,res)=>{
+    ..
+    let userimage = req.file.path;   // req.file -> Object 여기서 필요한건 path 정보
+    ..
+}
+await User.create({
+        userid,     // 2. userid : userid 와 같은 구문 - 이건 js 구문이라서 받아들여야함.
+        userpw,
+        username,
+        gender,
+        userimage       // 이 부분 추가하고 
+    });
+    res.render('./user/join_success.html',{
+        userid,
+        username,
+});
+다시 서버 열고 회원가입하고
+db에서 보면
+이미지 경로가 추가된걸 확인할 수 있다.
+-------------------------------------------------------
+
+* 만약 회원가입시 이미지를 안넣는다면?
+실행자체가 안되는데 이 부분을 예외처리 해줘야함
+
+user.controller.js
+이 부분을 조건문으로 걸어줘야 한다.
+let userimage = req.file == undefined ? '' : req.file.path;
+
+undefined : 빈 값
+빈 값이 아니면 path 가 들어가도록 한다.
+그림 12
+
+------------------------------------------------------
+* 아이디 중복 체크 - Ajax 로 처리
+아이디 input 칸에 id값을 주고 js에서 그 부분을 가져온다.
+index.js
+router.post('/login_check',controller.login_check);
+
+join.html
+user.controller.js 에서 
+let userid_check =
+
+
+join.html 에 script 부분에
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+// 이거는 라이브러리
+AjAX로 연결하려고 한다.
+let data = await axios.get(`http://localhost"3000/user/userid_check?userid=${userid.value}`);
+                        // Promise 객체로 반환된다.
+우리가 적은 userid 값을 쿼리로 보낸다 이걸 db에 조회한다.
+여기서 true false 값을 받아서 받은 값을 login_flag 에 넣어준다.
+
+
+http://localhost:3000/user/userid_check?userid=web7722
+이렇게 확인해보기
+- json으로 넘어오는지 확인한것
+
+가져온 값을 db에 있는 값과 비교해보기
+    let result = await User.findOne({
+        where:{ userid }
+    })
+값이 있으면 값이 들어오고
+값이 없으면 undefined 가 뜬다 - 이 아이디는 생성이 가능하다는 뜻
+
+result = undefined 생성 가능
+result = 객체가 존재하면 생성 불가능
+
+
+
+* 패스워드 확인 부분
+join.html 에서
+
+폼테그, 패스워드 두개, 서브밋 버튼에 id값 부여
+script처리해서 패스워드 일치할 때만 submit으로 들어가게
+-> 퍼블리싱 역할
+
+
+
+**
+패스워드 빈값 처리 부분만드렁주기

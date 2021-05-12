@@ -4,12 +4,32 @@ login html 입니다
     <table>
         <tr>
             <td>아이디</td>
-            <td><input type="text" name="userid"></td>
+            <td><input type="text" id="userid" name="userid"></td>
         </tr>
         <tr>
             <td>비밀번호</td>
-            <td><input type="password" name="userpw"></td>
+            <td><input type="password" id="userpw" name="userpw"></td>
         </tr>
     </table>
     <input type="submit" value="로그인">
 </form>
+
+<!--로그인 실패시 flag = 0 영역 alert 처리-->
+{% if flag == '0' %}
+<script type="text/javascript">
+    //alert('아이디와 패스워드를 확인해주세요');
+
+    // 요즘은 alert 보다는 이렇게 어느 잘못된 부분에 색을 칠해서 알려주는 식으로 한다,
+    const id = document.querySelector('#userid');
+    const pw = document.querySelector('#userpw');
+    id.setAttribute('style', 'background:red');
+    pw.setAttribute('style', 'background:red');
+
+    id.addEventListener('focus',()=>{
+        id.setAttribute('style', 'background:#fff');
+    })
+    pw.addEventListener('focus',()=>{
+        pw.setAttribute('style', 'background:#fff');
+    })
+</script>
+{% endif %}

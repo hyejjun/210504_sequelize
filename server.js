@@ -30,7 +30,7 @@ app.use(session({
 app.use(bodyParser.urlencoded({extended:false}));
 
 
-sequelize.sync({ force : false, })
+sequelize.sync({ force : false, })      // server 다시 켤때마다 db초기화 된다면 true를 false값으로 바꿔주기
 .then(()=>{
     console.log('접속 성공');
 })
@@ -38,8 +38,8 @@ sequelize.sync({ force : false, })
     console.log('접속 실패');
 })
 
-
-app.use('/',router);
+// 두가지의 미드웨어가 들어갈 수 있다.
+app.use('/',router);   //비동기
 
 
 app.listen(3000,()=>{
